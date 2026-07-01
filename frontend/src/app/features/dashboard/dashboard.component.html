@@ -1,0 +1,145 @@
+<div class="dashboard-page">
+  <!-- Page Header -->
+  <div class="page-title-row">
+    <div>
+      <h1>Executive Dashboard</h1>
+      <p class="subtitle">Real-time financial analytics and autonomous operations monitoring</p>
+    </div>
+    <div class="badge badge-success">Connected Node</div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loadingMetrics" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Synthesizing financial projections...</p>
+  </div>
+
+  <!-- KPI Grid -->
+  <div *ngIf="!loadingMetrics" class="kpi-grid">
+    <div class="glass-card kpi-card">
+      <div class="card-icon rev-icon">
+        <mat-icon>monetization_on</mat-icon>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Projected Revenue (30d)</span>
+        <h2 class="kpi-val">${{ revenue | number:'1.2-2' }}</h2>
+        <span class="kpi-sub success-text">
+          <mat-icon>trending_up</mat-icon> {{ growth }}% growth rate
+        </span>
+      </div>
+    </div>
+
+    <div class="glass-card kpi-card">
+      <div class="card-icon exp-icon">
+        <mat-icon>shopping_cart</mat-icon>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Projected Expenses</span>
+        <h2 class="kpi-val">${{ expenses | number:'1.2-2' }}</h2>
+        <span class="kpi-sub text-muted">Fixed + scaled PO costs</span>
+      </div>
+    </div>
+
+    <div class="glass-card kpi-card">
+      <div class="card-icon margin-icon">
+        <mat-icon>account_balance_wallet</mat-icon>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Projected Profit Margin</span>
+        <h2 class="kpi-val">{{ margin }}%</h2>
+        <span class="kpi-sub success-text">Net: ${{ profit | number:'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="glass-card kpi-card alert-kpi" [class.active-alert]="lowStockCount > 0">
+      <div class="card-icon stock-icon">
+        <mat-icon>warning</mat-icon>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Low Stock Products</span>
+        <h2 class="kpi-val">{{ lowStockCount }}</h2>
+        <span class="kpi-sub" [class.danger-text]="lowStockCount > 0">
+          {{ lowStockCount > 0 ? 'Requires immediate restock' : 'All items fully stocked' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics Layout Columns -->
+  <div *ngIf="!loadingMetrics" class="dashboard-columns">
+    <!-- Chart Panel -->
+    <div class="glass-card chart-panel-card">
+      <h3>Revenue Velocity & Forecasts</h3>
+      <div class="chart-container">
+        <canvas #salesChart></canvas>
+      </div>
+    </div>
+
+    <!-- Agent Control Panel -->
+    <div class="glass-card agent-panel-card">
+      <div class="panel-header">
+        <h3>Autonomous Reorder Agent</h3>
+        <span class="badge badge-info">LangGraph Node</span>
+      </div>
+      <p class="description">
+        Executes a stateful evaluation of stock levels, drafts purchase orders to highest-rated suppliers, and sends manager approvals automatically.
+      </p>
+
+      <button mat-flat-button color="accent" (click)="triggerAgent()" [disabled]="agentRunning" class="agent-btn">
+        <mat-icon *ngIf="!agentRunning">smart_toy</mat-icon>
+        <span *ngIf="!agentRunning">Execute Diagnostic & Reorder</span>
+        <mat-spinner diameter="18" *ngIf="agentRunning"></mat-spinner>
+      </button>
+
+      <!-- Terminal Logs -->
+      <div class="agent-terminal">
+        <div class="term-header">
+          <span>Agent Activity Console</span>
+          <span class="status-indicator" [class.active]="agentRunning"></span>
+        </div>
+        <div class="term-body">
+          <div *ngIf="agentLogs.length === 0" class="empty-logs">
+            &gt; Standby. Trigger agent execution to review diagnostic workflows.
+          </div>
+          <div *ngFor="let log of agentLogs" class="log-line">
+            &gt; {{ log }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Checkout list -->
+  <div *ngIf="!loadingMetrics" class="glass-card table-panel-card">
+    <h3>Recent Sales Transactions</h3>
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Tx ID</th>
+            <th>Timestamp</th>
+            <th>Customer</th>
+            <th>Payment Method</th>
+            <th>Tax</th>
+            <th>Total Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="sales.length === 0">
+            <td colspan="6" class="empty-table">No recent sales transactions recorded.</td>
+          </tr>
+          <tr *ngFor="let sale of sales">
+            <td>#{{ sale.id }}</td>
+            <td>{{ sale.date_created | date:'medium' }}</td>
+            <td>{{ sale.customer ? sale.customer.name : 'Walk-in Guest' }}</td>
+            <td>
+              <span class="badge badge-info">{{ sale.payment_method }}</span>
+            </td>
+            <td>${{ sale.tax }}</td>
+            <td class="total-col">${{ sale.total_amount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

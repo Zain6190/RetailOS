@@ -1,0 +1,57 @@
+<div class="login-page">
+  <!-- Glowing Background Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  
+  <div class="login-card-container">
+    <div class="login-header">
+      <mat-icon class="app-icon">auto_awesome</mat-icon>
+      <h2>SmartStore <span class="gradient-text">AI</span></h2>
+      <p>Autonomous Retail Operating System</p>
+    </div>
+
+    <div class="glass-card form-card">
+      <h3>Sign In</h3>
+      <p class="subtitle">Authenticate with corporate credentials</p>
+
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+        <!-- Error Alert -->
+        <div class="error-alert" *ngIf="errorMessage">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Corporate Email</mat-label>
+          <input matInput type="email" name="email" [(ngModel)]="email" required placeholder="name@smartstore.ai" autocomplete="email">
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" name="password" [(ngModel)]="password" required placeholder="••••••••" autocomplete="current-password">
+          <mat-icon matSuffix>lock</mat-icon>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading" class="submit-btn">
+          <span *ngIf="!loading">Launch Core Console</span>
+          <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+        </button>
+      </form>
+
+      <!-- Quick Seeding Credentials -->
+      <div class="quick-login">
+        <span>DEMO PRESETS:</span>
+        <div class="btn-group">
+          <button mat-stroked-button (click)="autoFill('admin')">Manager Account</button>
+          <button mat-stroked-button (click)="autoFill('staff')">Staff Account</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-footer">
+      <span>Enterprise POS and RAG System Node</span>
+      <p>&copy; 2026 SmartStore AI Corp. Azure Secured.</p>
+    </div>
+  </div>
+</div>

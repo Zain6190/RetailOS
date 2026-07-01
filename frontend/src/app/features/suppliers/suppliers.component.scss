@@ -1,0 +1,273 @@
+.suppliers-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  
+  h1 {
+    font-size: 26px;
+    font-weight: 800;
+  }
+  
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+}
+
+// Layout Grid
+.suppliers-grid {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  gap: 20px;
+  
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.suppliers-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: calc(100vh - 180px);
+  overflow: hidden;
+  
+  h3 {
+    font-size: 16px;
+  }
+}
+
+.suppliers-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.supplier-item-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: border-color 0.2s ease, background 0.2s;
+  
+  &:hover {
+    border-color: rgba(99, 102, 241, 0.25);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  
+  .sup-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 8px;
+    
+    .rating-lbl {
+      color: #fbbf24;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      
+      .star-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+  
+  .sup-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    
+    p {
+      font-size: 10px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      
+      mat-icon {
+        font-size: 12px;
+        width: 12px;
+        height: 12px;
+        color: var(--text-muted);
+      }
+    }
+  }
+}
+
+// Purchase Orders Panel
+.po-logs-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: calc(100vh - 180px);
+  overflow: hidden;
+  
+  h3 {
+    font-size: 16px;
+  }
+}
+
+.po-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+// Action buttons in table
+.action-btn {
+  height: 28px !important;
+  font-size: 11px !important;
+  line-height: 26px !important;
+  padding: 0 10px !important;
+  border-radius: 4px !important;
+}
+
+.sent-btn {
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  color: #fbbf24 !important;
+  
+  &:hover {
+    background: rgba(245, 158, 11, 0.08) !important;
+  }
+}
+
+.recv-btn {
+  background: var(--success) !important;
+  color: white !important;
+}
+
+.completed-lbl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--success);
+  font-weight: 600;
+  
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// PO builder modal styles
+.po-modal {
+  max-width: 680px !important;
+}
+
+.po-items-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  
+  .builder-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    h4 {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    .add-item-btn {
+      color: var(--accent-color);
+      font-size: 11px;
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+  
+  .builder-list {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+  }
+  
+  .builder-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 6px;
+    
+    .prod-select-field {
+      flex: 3;
+    }
+    .qty-field {
+      flex: 1;
+    }
+    .cost-field {
+      flex: 1.2;
+    }
+    
+    mat-form-field {
+      margin-bottom: -1.25em; // Offset material margins
+    }
+    
+    .delete-row-btn {
+      color: var(--danger) !important;
+    }
+  }
+}
+
+.po-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.grand-total-box {
+  display: flex;
+  flex-direction: column;
+  
+  span {
+    font-size: 10px;
+    color: var(--text-secondary);
+  }
+  
+  h3 {
+    font-size: 20px;
+    color: var(--accent-color);
+    font-weight: 700;
+  }
+}

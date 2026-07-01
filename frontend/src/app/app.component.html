@@ -1,0 +1,110 @@
+<!-- Root application layout -->
+<div *ngIf="!isLoggedIn" class="auth-wrapper">
+  <router-outlet></router-outlet>
+</div>
+
+<div *ngIf="isLoggedIn" class="app-container" [class.dark]="isDarkTheme">
+  <!-- Top Navigation Header -->
+  <mat-toolbar class="header-toolbar">
+    <button mat-icon-button (click)="isSidebarOpen = !isSidebarOpen" class="menu-btn">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <div class="header-logo">
+      <mat-icon class="logo-spark">auto_awesome</mat-icon>
+      <span class="logo-text">SmartStore <span class="gradient-text">AI</span></span>
+      <span class="badge badge-info status-badge">Live OS</span>
+    </div>
+    
+    <div class="spacer"></div>
+
+    <!-- Theme Toggle -->
+    <button mat-icon-button (click)="toggleTheme()" matTooltip="Toggle Dark/Light Mode" class="theme-btn">
+      <mat-icon>{{ isDarkTheme ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+
+    <!-- Notification Bell -->
+    <button mat-icon-button [matMenuTriggerFor]="notifMenu" class="notif-btn">
+      <mat-icon [matBadge]="unreadCount > 0 ? unreadCount : null" matBadgeColor="warn">notifications</mat-icon>
+    </button>
+    <mat-menu #notifMenu="matMenu" xPosition="before" class="notification-dropdown">
+      <div class="dropdown-header">
+        <h3>Alert Center</h3>
+        <button mat-button (click)="markAllAsRead()" *ngIf="unreadCount > 0">Clear all</button>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="notification-list" (click)="$event.stopPropagation()">
+        <div *ngIf="notifications.length === 0" class="empty-notif">
+          <mat-icon>notifications_none</mat-icon>
+          <p>All quiet. No notifications.</p>
+        </div>
+        <div *ngFor="let notif of notifications" class="notif-item" [class.unread]="!notif.read">
+          <div class="notif-details">
+            <span class="notif-title">{{ notif.title }}</span>
+            <p class="notif-msg">{{ notif.message }}</p>
+            <span class="notif-time">{{ notif.date | date:'shortTime' }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-menu>
+
+    <!-- User Profile Menu -->
+    <div class="profile-chip" [matMenuTriggerFor]="profileMenu">
+      <div class="avatar">{{ userName.charAt(0) }}</div>
+      <div class="profile-info">
+        <span class="p-name">{{ userName }}</span>
+        <span class="p-role">{{ userRole }}</span>
+      </div>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </div>
+    <mat-menu #profileMenu="matMenu" xPosition="before">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>My Profile</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        <span>Core Settings</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()" class="logout-item">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Sign Out</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <!-- Main Drawer Container -->
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav mode="side" [opened]="isSidebarOpen" class="app-sidebar">
+      <mat-nav-list class="sidebar-list">
+        <a mat-list-item routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="sidebar-item">
+          <mat-icon matListItemIcon>dashboard</mat-icon>
+          <span matListItemTitle>Executive Dashboard</span>
+        </a>
+        <a mat-list-item routerLink="/inventory" routerLinkActive="active-link" class="sidebar-item">
+          <mat-icon matListItemIcon>inventory_2</mat-icon>
+          <span matListItemTitle>Stock Control</span>
+        </a>
+        <a mat-list-item routerLink="/assistant" routerLinkActive="active-link" class="sidebar-item">
+          <mat-icon matListItemIcon>forum</mat-icon>
+          <span matListItemTitle>AI Store Copilot</span>
+        </a>
+        <a mat-list-item routerLink="/suppliers" routerLinkActive="active-link" class="sidebar-item">
+          <mat-icon matListItemIcon>local_shipping</mat-icon>
+          <span matListItemTitle>Supplier & POs</span>
+        </a>
+      </mat-nav-list>
+      <div class="sidebar-footer">
+        <p>SmartStore v1.0</p>
+        <span>Azure Production Stack</span>
+      </div>
+    </mat-sidenav>
+
+    <!-- Main Workspace Content -->
+    <mat-sidenav-content class="main-content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

@@ -1,0 +1,64 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+*.log
+
+# SQLite
+*.sqlite3
+*.db
+
+# Distribution
+build/
+dist/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Secrets
+secrets.json
+credentials.json
+service-account.json
+
+# Node (if any)
+node_modules/
+
+# Docker overrides
+docker-compose.override.yml

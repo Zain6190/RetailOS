@@ -1,0 +1,214 @@
+<div class="suppliers-page">
+  <!-- Page Header -->
+  <div class="page-title-row">
+    <div>
+      <h1>Suppliers & Procurement</h1>
+      <p class="subtitle">Manage supplier profiles, ratings, and track corporate purchase orders (POs)</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="isAddSupplierOpen = true">
+        <mat-icon>person_add</mat-icon>
+        <span>Register Supplier</span>
+      </button>
+      <button mat-flat-button color="primary" (click)="openAddPo()">
+        <mat-icon>receipt</mat-icon>
+        <span>Draft Purchase Order</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="suppliers-grid">
+    <!-- Left Column: Suppliers list -->
+    <div class="glass-card suppliers-card">
+      <h3>Registered Suppliers</h3>
+      <div class="suppliers-list-scroll">
+        <div *ngIf="suppliers.length === 0" class="empty-state">No suppliers registered.</div>
+        <div *ngFor="let sup of suppliers" class="supplier-item-card">
+          <div class="sup-head">
+            <strong>{{ sup.name }}</strong>
+            <span class="rating-lbl">
+              <mat-icon class="star-icon">star</mat-icon> {{ sup.rating | number:'1.1-1' }}
+            </span>
+          </div>
+          <div class="sup-details">
+            <p><mat-icon>person</mat-icon> {{ sup.contact_person || 'No Contact' }}</p>
+            <p><mat-icon>email</mat-icon> {{ sup.email || 'N/A' }}</p>
+            <p><mat-icon>phone</mat-icon> {{ sup.phone || 'N/A' }}</p>
+            <p><mat-icon>location_on</mat-icon> {{ sup.address || 'N/A' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Purchase Orders Logs -->
+    <div class="glass-card po-logs-card">
+      <h3>Purchase Order Audit Trail</h3>
+      
+      <div *ngIf="loading" class="po-loading">
+        <mat-spinner diameter="35"></mat-spinner>
+        <p>Retrieving transaction logs...</p>
+      </div>
+
+      <div *ngIf="!loading" class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>PO ID</th>
+              <th>Date Drafted</th>
+              <th>Supplier</th>
+              <th>Total Amount</th>
+              <th>Status</th>
+              <th class="actions-col">Control Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="purchaseOrders.length === 0">
+              <td colspan="6" class="empty-table">No purchase orders drafted.</td>
+            </tr>
+            <tr *ngFor="let po of purchaseOrders">
+              <td>#{{ po.id }}</td>
+              <td>{{ po.date_created | date:'shortDate' }}</td>
+              <td>{{ po.supplier?.name }}</td>
+              <td class="total-col">${{ po.total_amount | number:'1.2-2' }}</td>
+              <td>
+                <span class="badge"
+                      [class.badge-info]="po.status === 'Draft'"
+                      [class.badge-warning]="po.status === 'Sent'"
+                      [class.badge-success]="po.status === 'Received'"
+                      [class.badge-danger]="po.status === 'Cancelled'">
+                  {{ po.status }}
+                </span>
+              </td>
+              <td class="actions-col">
+                <button mat-stroked-button *ngIf="po.status === 'Draft'" (click)="updatePoStatus(po.id, 'Sent')" class="action-btn sent-btn">
+                  Send
+                </button>
+                <button mat-flat-button color="accent" *ngIf="po.status === 'Sent'" (click)="updatePoStatus(po.id, 'Received')" class="action-btn recv-btn">
+                  Receive
+                </button>
+                <span *ngIf="po.status === 'Received'" class="completed-lbl">
+                  <mat-icon>check_circle</mat-icon> Stocks Restocked
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Supplier Modal Dialog -->
+  <div class="modal-overlay" *ngIf="isAddSupplierOpen">
+    <div class="glass-card modal-card animate-scale small-modal">
+      <div class="modal-header">
+        <h2>Register Supplier</h2>
+        <button mat-icon-button (click)="isAddSupplierOpen = false">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+      <form (ngSubmit)="submitSupplier()" class="modal-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Supplier Corporate Name</mat-label>
+          <input matInput [(ngModel)]="supName" name="name" required placeholder="E.g. Nexus Distributors">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Contact Person</mat-label>
+          <input matInput [(ngModel)]="supContact" name="contact">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email Address</mat-label>
+          <input matInput type="email" [(ngModel)]="supEmail" name="email">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Phone Number</mat-label>
+          <input matInput [(ngModel)]="supPhone" name="phone">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Corporate Address</mat-label>
+          <input matInput [(ngModel)]="supAddress" name="addr">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Quality Rating (1.0 - 5.0)</mat-label>
+          <input matInput type="number" step="0.1" min="1.0" max="5.0" [(ngModel)]="supRating" name="rate">
+        </mat-form-field>
+        <div class="modal-actions">
+          <button mat-button type="button" (click)="isAddSupplierOpen = false">Cancel</button>
+          <button mat-flat-button color="primary" type="submit">Complete Registry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Draft Purchase Order Modal Dialog -->
+  <div class="modal-overlay" *ngIf="isAddPoOpen">
+    <div class="glass-card modal-card animate-scale po-modal">
+      <div class="modal-header">
+        <h2>Draft Purchase Order</h2>
+        <button mat-icon-button (click)="isAddPoOpen = false">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+      
+      <form (ngSubmit)="submitPurchaseOrder()" class="modal-form">
+        <!-- Supplier Select -->
+        <mat-form-field appearance="outline">
+          <mat-label>Select Supplier</mat-label>
+          <mat-select [(ngModel)]="selectedSupplierId" name="supplier" required>
+            <mat-option *ngFor="let sup of suppliers" [value]="sup.id">{{ sup.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Order Items Builder Table -->
+        <div class="po-items-builder">
+          <div class="builder-header">
+            <h4>Order Items:</h4>
+            <button mat-button type="button" (click)="addPoItem()" class="add-item-btn">
+              <mat-icon>add</mat-icon> Add Row
+            </button>
+          </div>
+          
+          <div class="builder-list">
+            <div *ngFor="let item of poItems; let i = index" class="builder-row animate-scale">
+              <mat-form-field appearance="outline" class="prod-select-field">
+                <mat-label>Product</mat-label>
+                <mat-select [(ngModel)]="item.product_id" name="prod_{{i}}" required (selectionChange)="onProductSelected(item)">
+                  <mat-option *ngFor="let prod of products" [value]="prod.id">{{ prod.name }} (SKU: {{ prod.sku }})</mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="qty-field">
+                <mat-label>Qty</mat-label>
+                <input matInput type="number" [(ngModel)]="item.quantity" name="qty_{{i}}" required>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline" class="cost-field">
+                <mat-label>Cost ($)</mat-label>
+                <input matInput type="number" step="0.01" [(ngModel)]="item.unit_cost" name="cost_{{i}}" required>
+              </mat-form-field>
+
+              <button mat-icon-button type="button" (click)="removePoItem(i)" class="delete-row-btn" [disabled]="poItems.length === 1">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+        
+        <!-- PO Total and Actions -->
+        <div class="po-footer-row">
+          <div class="grand-total-box">
+            <span>Grand Total:</span>
+            <h3>${{ poTotalAmount | number:'1.2-2' }}</h3>
+          </div>
+          <div class="modal-actions">
+            <button mat-button type="button" (click)="isAddPoOpen = false">Cancel</button>
+            <button mat-flat-button color="primary" type="submit">Draft PO</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
