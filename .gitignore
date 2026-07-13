@@ -62,3 +62,6 @@ node_modules/
 
 # Docker overrides
 docker-compose.override.yml
+
+# Angular cache
+.angular/

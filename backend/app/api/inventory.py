@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from backend.app.core.database import get_db
-from backend.app.models.models import Category, Product, Inventory, AILog, Notification
+from backend.app.models.models import Category, Product, Inventory, AILog, Notification, User
 from backend.app.schemas.schemas import (
     CategoryCreate, CategoryOut, ProductCreate, ProductOut, ProductUpdate,
     InventoryOut, InventoryUpdate, ShelfDetectionRequest, ShelfDetectionResponse, DetectedItem
