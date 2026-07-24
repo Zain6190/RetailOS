@@ -186,4 +186,31 @@ export class ApiService {
     const token = localStorage.getItem('access_token');
     return `${this.baseUrl}/reports/export?report_type=${reportType}&format=csv&token=${token || ''}`;
   }
+
+  // --- Staff & Task Management ---
+  getStaffOverview(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/auth/staff`, { headers: this.getHeaders() });
+  }
+
+  getAllTasks(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/tasks`, { headers: this.getHeaders() });
+  }
+
+  getMyTasks(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/tasks/my`, { headers: this.getHeaders() });
+  }
+
+  createTask(title: string, description?: string, assignedToId?: number, dueDate?: string): Observable<any> {
+    const payload = {
+      title,
+      description,
+      assigned_to_id: assignedToId,
+      due_date: dueDate
+    };
+    return this.http.post<any>(`${this.baseUrl}/tasks`, payload, { headers: this.getHeaders() });
+  }
+
+  updateTaskStatus(id: number, status: string): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/tasks/${id}/status`, { status }, { headers: this.getHeaders() });
+  }
 }

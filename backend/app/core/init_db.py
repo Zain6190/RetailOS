@@ -5,8 +5,9 @@ from backend.app.core.security import get_password_hash
 from backend.app.models.models import (
     Role, User, Employee, Customer, Category, Product, Inventory,
     Sale, SaleItem, Order, Supplier, PurchaseOrder, PurchaseOrderItem,
-    Forecast, PricingHistory, Notification, Document
+    Forecast, PricingHistory, Notification, Document, Task
 )
+from backend.app.services.vector_store import VectorStore
 
 def seed_db(db: Session):
     # 1. Seed Roles
@@ -214,6 +215,53 @@ def seed_db(db: Session):
         ]
         db.add_all(docs)
         db.commit()
+
+        # Embed each document into Qdrant so RAG semantic search works immediately
+        for doc in docs:
+            db.refresh(doc)  # ensures doc.id is populated
+            try:
+                VectorStore.upsert_document(doc.id, doc.title, doc.content)
+            except Exception as e:
+                print(f"Warning: could not embed document '{doc.title}' into Qdrant: {e}")
+
+    # 9. Seed Tasks
+    if db.query(Task).count() == 0:
+        admin_user = db.query(User).filter_by(email="admin@smartstore.ai").first()
+        staff_user = db.query(User).filter_by(email="staff@smartstore.ai").first()
+        
+        if admin_user and staff_user:
+            tasks = [
+                Task(
+                    title="Restock Organic Almond Milk",
+                    description="Almond Milk inventory is low (below 15 units). Scan shelf and verify stock.",
+                    status="Pending",
+                    assigned_to_id=staff_user.id,
+                    due_date=datetime.utcnow() + timedelta(days=1)
+                ),
+                Task(
+                    title="Conduct Weekly Inventory Audit",
+                    description="Perform a physical stock count of snacks and beverages categories.",
+                    status="Pending",
+                    assigned_to_id=staff_user.id,
+                    due_date=datetime.utcnow() + timedelta(days=3)
+                ),
+                Task(
+                    title="Review Apex Distributors Delivery Report",
+                    description="Analyze the rating and verify why the recent delivery was delayed.",
+                    status="Completed",
+                    assigned_to_id=staff_user.id,
+                    due_date=datetime.utcnow() - timedelta(days=1)
+                ),
+                Task(
+                    title="Audit Store Dynamic Pricing Rules",
+                    description="Verify pricing safety guardrails and scarcity markup percentages.",
+                    status="Pending",
+                    assigned_to_id=admin_user.id,
+                    due_date=datetime.utcnow() + timedelta(days=2)
+                )
+            ]
+            db.add_all(tasks)
+            db.commit()
 
 def init_db():
     Base.metadata.create_all(bind=engine)

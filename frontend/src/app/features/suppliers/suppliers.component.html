@@ -22,7 +22,11 @@
     <div class="glass-card suppliers-card">
       <h3>Registered Suppliers</h3>
       <div class="suppliers-list-scroll">
-        <div *ngIf="suppliers.length === 0" class="empty-state">No suppliers registered.</div>
+        <div *ngIf="suppliers.length === 0" class="empty-state-container" style="text-align: center; padding: 32px 16px; color: var(--text-muted);">
+          <mat-icon style="font-size: 40px; width: 40px; height: 40px; margin-bottom: 8px; color: var(--text-muted);">business</mat-icon>
+          <p style="font-size: 13.5px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">No Registered Suppliers</p>
+          <span style="font-size: 11.5px; display: block;">Get started by registering a new corporate supplier vendor profile.</span>
+        </div>
         <div *ngFor="let sup of suppliers" class="supplier-item-card">
           <div class="sup-head">
             <strong>{{ sup.name }}</strong>
@@ -63,7 +67,11 @@
           </thead>
           <tbody>
             <tr *ngIf="purchaseOrders.length === 0">
-              <td colspan="6" class="empty-table">No purchase orders drafted.</td>
+              <td colspan="6" class="empty-table-cell" style="text-align: center; padding: 48px 16px; color: var(--text-muted);">
+                <mat-icon style="font-size: 48px; width: 48px; height: 48px; margin-bottom: 12px; color: var(--text-muted); display: inline-block;">description</mat-icon>
+                <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--text-secondary);">No Purchase Orders Drafted</h3>
+                <p style="font-size: 12px; max-width: 320px; margin: 0 auto; line-height: 1.4; color: var(--text-muted);">Establish supplier relationships and draft new purchase orders to restock inventory levels.</p>
+              </td>
             </tr>
             <tr *ngFor="let po of purchaseOrders">
               <td>#{{ po.id }}</td>

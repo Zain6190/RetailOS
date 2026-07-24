@@ -21,7 +21,7 @@ router = APIRouter()
 def assistant_chat(
     payload: ChatRequest,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_admin)
 ):
     # Log user message
     user_msg = ChatHistory(

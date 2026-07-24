@@ -7,9 +7,9 @@ from typing import List
 from backend.app.core.config import settings
 from backend.app.core.database import get_db
 from backend.app.core.security import verify_password, get_password_hash, create_access_token
-from backend.app.models.models import User, Role, Employee
-from backend.app.schemas.schemas import Token, UserCreate, UserOut, UserLogin, RoleOut
-from backend.app.api.deps import get_current_user
+from backend.app.models.models import User, Role, Employee, Sale, Task
+from backend.app.schemas.schemas import Token, UserCreate, UserOut, UserLogin, RoleOut, StaffOverviewOut
+from backend.app.api.deps import get_current_user, get_current_admin
 
 router = APIRouter()
 
@@ -107,3 +107,65 @@ def read_roles(
     db: Session = Depends(get_db)
 ):
     return db.query(Role).all()
+
+
+@router.get("/staff", response_model=List[StaffOverviewOut])
+def read_staff_overview(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin)
+):
+    """
+    Get detailed overview of all employees, their sales stats, assigned tasks, and last activity. (Admin/Manager only)
+    """
+    users = db.query(User).all()
+    overview = []
+    for u in users:
+        role_name = u.role.name
+        
+        # Pull Employee record details if exists
+        dept = u.employee.department if u.employee else None
+        pos = u.employee.position if u.employee else None
+        salary = u.employee.salary if u.employee else None
+        hire_date = u.employee.hire_date if u.employee else None
+        
+        # Calculate sales count & total amount
+        sales_count = 0
+        total_sales_amount = 0.0
+        last_sale_date = None
+        
+        if u.employee:
+            sales = db.query(Sale).filter(Sale.employee_id == u.employee.id).all()
+            sales_count = len(sales)
+            total_sales_amount = sum(s.total_amount for s in sales)
+            if sales:
+                last_sale_date = max(s.date_created for s in sales)
+        
+        # Get tasks assigned to this user
+        tasks = db.query(Task).filter(Task.assigned_to_id == u.id).all()
+        pending_tasks = sum(1 for t in tasks if t.status == "Pending")
+        completed_tasks = sum(1 for t in tasks if t.status == "Completed")
+        
+        # Determine last activity
+        last_activity = last_sale_date
+        if not last_activity and tasks:
+            last_activity = max(t.date_created for t in tasks)
+        if not last_activity:
+            last_activity = u.date_created
+
+        overview.append(StaffOverviewOut(
+            id=u.id,
+            email=u.email,
+            full_name=u.full_name,
+            role=role_name,
+            department=dept,
+            position=pos,
+            salary=salary,
+            hire_date=hire_date,
+            sales_count=sales_count,
+            total_sales_amount=round(total_sales_amount, 2),
+            pending_tasks_count=pending_tasks,
+            completed_tasks_count=completed_tasks,
+            tasks=tasks,
+            last_activity=last_activity
+        ))
+    return overview

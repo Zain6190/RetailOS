@@ -36,6 +36,7 @@ export class InventoryComponent implements OnInit {
   searchQuery = '';
   statusFilter = 'all';
   loading = true;
+  userRole = '';
 
   // New Category form
   newCategoryName = '';
@@ -75,6 +76,7 @@ export class InventoryComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit() {
+    this.userRole = localStorage.getItem('user_role') || 'Admin';
     this.loadData();
   }
 

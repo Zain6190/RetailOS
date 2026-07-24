@@ -1,11 +1,12 @@
-<div class="dashboard-page">
+<!-- Manager (Administrator) Portal View -->
+<div *ngIf="userRole === 'Administrator'" class="dashboard-page animate-fade-in">
   <!-- Page Header -->
   <div class="page-title-row">
     <div>
-      <h1>Executive Dashboard</h1>
-      <p class="subtitle">Real-time financial analytics and autonomous operations monitoring</p>
+      <h1 class="display-font">Manager Control Tower</h1>
+      <p class="subtitle">Executive retail operations, forecasting nodes, and staff compliance logs</p>
     </div>
-    <div class="badge badge-success">Connected Node</div>
+    <div class="badge badge-success" style="background-color: var(--success); color: #0b0f14;">System Operational</div>
   </div>
 
   <!-- Loading State -->
@@ -16,60 +17,89 @@
 
   <!-- KPI Grid -->
   <div *ngIf="!loadingMetrics" class="kpi-grid">
-    <div class="glass-card kpi-card">
+    <div class="glass-card kpi-card animate-fade-in delay-1">
       <div class="card-icon rev-icon">
         <mat-icon>monetization_on</mat-icon>
       </div>
       <div class="kpi-info">
         <span class="kpi-label">Projected Revenue (30d)</span>
-        <h2 class="kpi-val">${{ revenue | number:'1.2-2' }}</h2>
-        <span class="kpi-sub success-text">
-          <mat-icon>trending_up</mat-icon> {{ growth }}% growth rate
+        <h2 class="kpi-val mono-num">${{ animatedRevenue | number:'1.2-2' }}</h2>
+        <span class="kpi-sub success-text" style="color: var(--success);">
+          <mat-icon style="font-size: 14px;">trending_up</mat-icon> {{ animatedGrowth }}% growth rate
         </span>
+      </div>
+      <!-- SVG 7-point sparkline -->
+      <div class="kpi-sparkline" style="color: var(--success);">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path d="M 0,25 L 15,22 L 30,15 L 45,18 L 60,10 L 75,6 L 90,2 L 100,0" fill="none" stroke="currentColor" stroke-width="2"></path>
+        </svg>
       </div>
     </div>
 
-    <div class="glass-card kpi-card">
+    <div class="glass-card kpi-card animate-fade-in delay-2">
       <div class="card-icon exp-icon">
         <mat-icon>shopping_cart</mat-icon>
       </div>
       <div class="kpi-info">
         <span class="kpi-label">Projected Expenses</span>
-        <h2 class="kpi-val">${{ expenses | number:'1.2-2' }}</h2>
+        <h2 class="kpi-val mono-num">${{ animatedExpenses | number:'1.2-2' }}</h2>
         <span class="kpi-sub text-muted">Fixed + scaled PO costs</span>
+      </div>
+      <!-- SVG 7-point sparkline -->
+      <div class="kpi-sparkline" style="color: var(--accent-color-2);">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path d="M 0,5 L 15,12 L 30,10 L 45,18 L 60,15 L 75,24 L 90,20 L 100,26" fill="none" stroke="currentColor" stroke-width="2"></path>
+        </svg>
       </div>
     </div>
 
-    <div class="glass-card kpi-card">
+    <div class="glass-card kpi-card animate-fade-in delay-3">
       <div class="card-icon margin-icon">
         <mat-icon>account_balance_wallet</mat-icon>
       </div>
       <div class="kpi-info">
         <span class="kpi-label">Projected Profit Margin</span>
-        <h2 class="kpi-val">{{ margin }}%</h2>
-        <span class="kpi-sub success-text">Net: ${{ profit | number:'1.0-0' }}</span>
+        <h2 class="kpi-val mono-num">{{ animatedMargin }}%</h2>
+        <span class="kpi-sub success-text" style="color: var(--success);">Net: ${{ animatedProfit | number:'1.0-0' }}</span>
+      </div>
+      <!-- SVG 7-point sparkline -->
+      <div class="kpi-sparkline" style="color: var(--accent-color);">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path d="M 0,15 Q 20,8 40,15 T 80,10 T 100,6" fill="none" stroke="currentColor" stroke-width="2"></path>
+        </svg>
       </div>
     </div>
 
-    <div class="glass-card kpi-card alert-kpi" [class.active-alert]="lowStockCount > 0">
+    <div class="glass-card kpi-card alert-kpi animate-fade-in delay-4" [class.active-alert]="animatedLowStockCount > 0">
       <div class="card-icon stock-icon">
         <mat-icon>warning</mat-icon>
       </div>
       <div class="kpi-info">
         <span class="kpi-label">Low Stock Products</span>
-        <h2 class="kpi-val">{{ lowStockCount }}</h2>
-        <span class="kpi-sub" [class.danger-text]="lowStockCount > 0">
-          {{ lowStockCount > 0 ? 'Requires immediate restock' : 'All items fully stocked' }}
+        <h2 class="kpi-val mono-num">{{ animatedLowStockCount }}</h2>
+        <span class="kpi-sub" [class.danger-text]="animatedLowStockCount > 0" [style.color]="animatedLowStockCount > 0 ? 'var(--danger)' : 'var(--text-muted)'">
+          {{ animatedLowStockCount > 0 ? 'Requires immediate restock' : 'All items fully stocked' }}
         </span>
+      </div>
+      <!-- SVG 7-point sparkline -->
+      <div class="kpi-sparkline" style="color: var(--danger);">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path d="M 0,10 L 15,22 L 30,5 L 45,25 L 60,12 L 75,18 L 90,2 L 100,20" fill="none" stroke="currentColor" stroke-width="2"></path>
+        </svg>
       </div>
     </div>
   </div>
 
+  <!-- SKU divider -->
+  <div class="sku-tick-rule animate-fade-in delay-2">
+    <span>⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢ SYSTEM GRAPH METRICS ⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢</span>
+  </div>
+
   <!-- Analytics Layout Columns -->
-  <div *ngIf="!loadingMetrics" class="dashboard-columns">
+  <div *ngIf="!loadingMetrics" class="dashboard-columns animate-fade-in delay-2">
     <!-- Chart Panel -->
     <div class="glass-card chart-panel-card">
-      <h3>Revenue Velocity & Forecasts</h3>
+      <h3 class="display-font">Revenue Velocity & Forecasts</h3>
       <div class="chart-container">
         <canvas #salesChart></canvas>
       </div>
@@ -78,17 +108,27 @@
     <!-- Agent Control Panel -->
     <div class="glass-card agent-panel-card">
       <div class="panel-header">
-        <h3>Autonomous Reorder Agent</h3>
-        <span class="badge badge-info">LangGraph Node</span>
+        <h3 class="display-font" style="display:flex; align-items:center;">
+          Autonomous Reorder
+          <!-- Agent pulse centerpiece -->
+          <div class="agent-pulse" [class.active]="agentRunning">
+            <div class="pulse-bar bar1"></div>
+            <div class="pulse-bar bar2"></div>
+            <div class="pulse-bar bar3"></div>
+            <div class="pulse-bar bar4"></div>
+            <div class="pulse-bar bar5"></div>
+          </div>
+        </h3>
+        <span class="badge badge-info" style="background-color: var(--accent-color-2); color: #E8ECEF;">LangGraph Node</span>
       </div>
       <p class="description">
         Executes a stateful evaluation of stock levels, drafts purchase orders to highest-rated suppliers, and sends manager approvals automatically.
       </p>
 
-      <button mat-flat-button color="accent" (click)="triggerAgent()" [disabled]="agentRunning" class="agent-btn">
-        <mat-icon *ngIf="!agentRunning">smart_toy</mat-icon>
+      <button mat-flat-button color="primary" (click)="triggerAgent()" [disabled]="agentRunning" class="agent-btn">
+        <mat-icon *ngIf="!agentRunning" style="margin-right: 6px;">smart_toy</mat-icon>
         <span *ngIf="!agentRunning">Execute Diagnostic & Reorder</span>
-        <mat-spinner diameter="18" *ngIf="agentRunning"></mat-spinner>
+        <mat-spinner diameter="18" *ngIf="agentRunning" style="margin: 0 auto;"></mat-spinner>
       </button>
 
       <!-- Terminal Logs -->
@@ -109,9 +149,73 @@
     </div>
   </div>
 
+  <!-- SKU divider -->
+  <div class="sku-tick-rule animate-fade-in delay-3">
+    <span>⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢ TEAM OVERVIEW & DRILLDOWN ⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢</span>
+  </div>
+
+  <!-- Staff Management Overview Panel -->
+  <div *ngIf="!loadingMetrics" class="glass-card table-panel-card animate-fade-in delay-3">
+    <div class="panel-header-row">
+      <div>
+        <h3 class="display-font">Team Performance Metrics</h3>
+        <p class="description">Monitor sales counts, revenue contributions, assigned tasks, and compliance activity logs</p>
+      </div>
+      <span class="badge badge-info" style="background-color: var(--accent-color); color: #0b0f14;">Active Staff: {{ staffMembers.length }}</span>
+    </div>
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Employee Name</th>
+            <th>Role / Position</th>
+            <th>Today's Sales Count</th>
+            <th>Total Revenue Generated</th>
+            <th>Assigned Tasks (Pending / Done)</th>
+            <th>Last Active Activity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="staffMembers.length === 0">
+            <td colspan="6" class="empty-table">
+              <mat-icon class="empty-icon">people_outline</mat-icon>
+              <p>No active staff logs recorded in system.</p>
+            </td>
+          </tr>
+          <tr *ngFor="let staff of staffMembers">
+            <td>
+              <div class="staff-name-cell">
+                <div class="avatar-small">{{ staff.full_name.charAt(0) }}</div>
+                <span>{{ staff.full_name }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="badge" [class.badge-success]="staff.role === 'Administrator'" [class.badge-info]="staff.role !== 'Administrator'">
+                {{ staff.position || staff.role }}
+              </span>
+            </td>
+            <td class="mono-num">{{ staff.sales_count }} sales</td>
+            <td class="total-col mono-num">${{ staff.total_sales_amount | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge badge-warning" *ngIf="staff.pending_tasks_count > 0">{{ staff.pending_tasks_count }} Pending</span>
+              <span class="badge badge-success" *ngIf="staff.completed_tasks_count > 0" style="margin-left: 6px;">{{ staff.completed_tasks_count }} Done</span>
+              <span class="text-muted" *ngIf="staff.pending_tasks_count === 0 && staff.completed_tasks_count === 0">No tasks</span>
+            </td>
+            <td class="text-muted mono-num">{{ staff.last_activity | date:'medium' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SKU divider -->
+  <div class="sku-tick-rule animate-fade-in delay-4">
+    <span>⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢ RECENT SALES ENTRIES ⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢</span>
+  </div>
+
   <!-- Recent Checkout list -->
-  <div *ngIf="!loadingMetrics" class="glass-card table-panel-card">
-    <h3>Recent Sales Transactions</h3>
+  <div *ngIf="!loadingMetrics" class="glass-card table-panel-card animate-fade-in delay-4" style="margin-bottom: 24px;">
+    <h3 class="display-font">Recent Sales Transactions</h3>
     <div class="table-container">
       <table class="custom-table">
         <thead>
@@ -126,17 +230,234 @@
         </thead>
         <tbody>
           <tr *ngIf="sales.length === 0">
-            <td colspan="6" class="empty-table">No recent sales transactions recorded.</td>
+            <td colspan="6" class="empty-table">
+              <mat-icon class="empty-icon">receipt_long</mat-icon>
+              <p>No recent sales transactions recorded.</p>
+            </td>
           </tr>
           <tr *ngFor="let sale of sales">
-            <td>#{{ sale.id }}</td>
-            <td>{{ sale.date_created | date:'medium' }}</td>
+            <td class="mono-num">#{{ sale.id }}</td>
+            <td class="mono-num">{{ sale.date_created | date:'medium' }}</td>
             <td>{{ sale.customer ? sale.customer.name : 'Walk-in Guest' }}</td>
             <td>
               <span class="badge badge-info">{{ sale.payment_method }}</span>
             </td>
-            <td>${{ sale.tax }}</td>
-            <td class="total-col">${{ sale.total_amount }}</td>
+            <td class="mono-num">${{ sale.tax }}</td>
+            <td class="total-col mono-num">${{ sale.total_amount }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Staff (Employee) Portal View -->
+<div *ngIf="userRole === 'Employee'" class="dashboard-page animate-fade-in staff-portal">
+  <!-- Page Header -->
+  <div class="page-title-row">
+    <div>
+      <h1 class="display-font">Floor Shift Dashboard</h1>
+      <p class="subtitle">Quick stock lookup catalog, assigned checklist tasks, and shift sales stats</p>
+    </div>
+    <div class="badge badge-success" style="background-color: var(--success); color: #0f1712;">Shift Session Active</div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loadingMetrics" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Connecting to store backend node...</p>
+  </div>
+
+  <!-- KPI Grid -->
+  <div *ngIf="!loadingMetrics" class="kpi-grid">
+    <div class="glass-card kpi-card animate-fade-in delay-1">
+      <div class="card-icon rev-icon">
+        <mat-icon>shopping_bag</mat-icon>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">My Sales Today</span>
+        <h2 class="kpi-val mono-num">${{ animatedMySalesTotal | number:'1.2-2' }}</h2>
+        <span class="kpi-sub success-text" style="color: var(--success);">
+          <mat-icon style="font-size: 14px;">check_circle</mat-icon> {{ animatedMySalesCount }} transactions
+        </span>
+      </div>
+      <!-- SVG 7-point sparkline -->
+      <div class="kpi-sparkline" style="color: var(--success);">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path d="M 0,20 C 20,18 40,8 60,15 T 100,5" fill="none" stroke="currentColor" stroke-width="2"></path>
+        </svg>
+      </div>
+    </div>
+
+    <div class="glass-card kpi-card animate-fade-in delay-2">
+      <div class="card-icon task-card-icon">
+        <mat-icon>playlist_add_check</mat-icon>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">My Pending Tasks</span>
+        <h2 class="kpi-val mono-num">{{ animatedTasksCount }} Items</h2>
+        <span class="kpi-sub text-muted">Complete assigned operational tasks</span>
+      </div>
+      <!-- SVG 7-point sparkline -->
+      <div class="kpi-sparkline" style="color: var(--accent-color-2);">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path d="M 0,15 L 20,15 L 40,10 L 60,12 L 80,5 L 100,8" fill="none" stroke="currentColor" stroke-width="2"></path>
+        </svg>
+      </div>
+    </div>
+
+    <div class="glass-card kpi-card alert-kpi animate-fade-in delay-3" [class.active-alert]="animatedLowStockCount > 0">
+      <div class="card-icon stock-icon">
+        <mat-icon>warning</mat-icon>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Low Stock Alerts</span>
+        <h2 class="kpi-val mono-num">{{ animatedLowStockCount }} items</h2>
+        <span class="kpi-sub" [class.danger-text]="animatedLowStockCount > 0" [style.color]="animatedLowStockCount > 0 ? 'var(--danger)' : 'var(--text-muted)'">
+          {{ animatedLowStockCount > 0 ? 'Reorders requested' : 'All items fully stocked' }}
+        </span>
+      </div>
+      <!-- SVG 7-point sparkline -->
+      <div class="kpi-sparkline" style="color: var(--danger);">
+        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+          <path d="M 0,10 L 20,20 L 40,5 L 60,25 L 80,10 L 100,15" fill="none" stroke="currentColor" stroke-width="2"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKU divider -->
+  <div class="sku-tick-rule animate-fade-in delay-2">
+    <span>⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢ SHIFT CONTROLS & CHECKLIST ⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢</span>
+  </div>
+
+  <!-- Staff Portal Columns -->
+  <div *ngIf="!loadingMetrics" class="dashboard-columns animate-fade-in delay-2">
+    <!-- Left Column: Quick Stock Lookup -->
+    <div class="glass-card lookup-panel-card">
+      <div class="panel-header-row">
+        <h3 class="display-font">Stock Lookup</h3>
+        <p class="description">Scan bar codes or query catalog stock items (read-only)</p>
+      </div>
+      
+      <!-- Search Input -->
+      <div class="search-box-row">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" [(ngModel)]="searchQuery" (input)="onSearchChange()" placeholder="Search by SKU, Name, or Barcode..." class="custom-search-input">
+      </div>
+
+      <!-- Products Grid -->
+      <div class="table-container lookup-table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>SKU / Barcode</th>
+              <th>Product Name</th>
+              <th>Status</th>
+              <th>Stock Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="filteredProducts.length === 0">
+              <td colspan="4" class="empty-table">No matching products found.</td>
+            </tr>
+            <tr *ngFor="let prod of filteredProducts">
+              <td class="mono-num">
+                <span class="font-medium" style="display:block;">{{ prod.sku }}</span>
+                <span class="text-muted" style="font-size:11px;">{{ prod.barcode || 'No Barcode' }}</span>
+              </td>
+              <td class="font-medium">{{ prod.name }}</td>
+              <td>
+                <span class="badge" 
+                  [class.badge-success]="prod.inventory?.status === 'In Stock'"
+                  [class.badge-warning]="prod.inventory?.status === 'Low Stock'"
+                  [class.badge-danger]="prod.inventory?.status === 'Out of Stock'">
+                  {{ prod.inventory?.status || 'Unknown' }}
+                </span>
+              </td>
+              <td class="font-bold mono-num" [class.danger-text]="prod.inventory?.quantity === 0">
+                {{ prod.inventory?.quantity ?? 0 }} units
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Right Column: My Assigned Tasks -->
+    <div class="glass-card tasks-panel-card">
+      <div class="panel-header-row">
+        <h3 class="display-font">My Operational Checklist</h3>
+        <p class="description">Mark checklist actions complete to log compliance</p>
+      </div>
+
+      <div class="tasks-list">
+        <!-- Empty State -->
+        <div *ngIf="tasks.length === 0" class="empty-tasks-container">
+          <mat-icon class="empty-icon" style="color: var(--primary-color);">assignment_turned_in</mat-icon>
+          <p>All clean! No pending shift tasks are assigned today.</p>
+        </div>
+
+        <!-- Task Item -->
+        <div *ngFor="let t of tasks" class="task-item" [class.completed]="t.status === 'Completed'">
+          <div class="task-checkbox-col">
+            <button mat-icon-button (click)="toggleTaskStatus(t)" class="task-check-btn">
+              <mat-icon style="color: var(--primary-color);">{{ t.status === 'Completed' ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+            </button>
+          </div>
+          <div class="task-info-col">
+            <span class="task-title">{{ t.title }}</span>
+            <p class="task-desc" *ngIf="t.description">{{ t.description }}</p>
+            <div class="task-meta">
+              <span class="task-due mono-num" *ngIf="t.due_date">Due: {{ t.due_date | date:'mediumDate' }}</span>
+              <span class="badge" [class.badge-success]="t.status === 'Completed'" [class.badge-warning]="t.status !== 'Completed'">
+                {{ t.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKU divider -->
+  <div class="sku-tick-rule animate-fade-in delay-3">
+    <span>⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢ TODAY'S SHIFT SALES LOG ⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢⎢</span>
+  </div>
+
+  <!-- Staff Portal: My Today's Transactions -->
+  <div *ngIf="!loadingMetrics" class="glass-card table-panel-card animate-fade-in delay-3" style="margin-bottom: 24px;">
+    <h3 class="display-font">My Transactions Today</h3>
+    <p class="description">Sales processed by your active login drawer during this shift</p>
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Tx ID</th>
+            <th>Timestamp</th>
+            <th>Customer</th>
+            <th>Payment Method</th>
+            <th>Tax</th>
+            <th>Total Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="sales.length === 0">
+            <td colspan="6" class="empty-table">
+              <mat-icon class="empty-icon">sell</mat-icon>
+              <p>You have not processed any sales transactions today.</p>
+            </td>
+          </tr>
+          <tr *ngFor="let sale of sales">
+            <td class="mono-num">#{{ sale.id }}</td>
+            <td class="mono-num">{{ sale.date_created | date:'medium' }}</td>
+            <td>{{ sale.customer ? sale.customer.name : 'Walk-in Guest' }}</td>
+            <td>
+              <span class="badge badge-info">{{ sale.payment_method }}</span>
+            </td>
+            <td class="mono-num">${{ sale.tax }}</td>
+            <td class="total-col mono-num">${{ sale.total_amount }}</td>
           </tr>
         </tbody>
       </table>

@@ -294,3 +294,17 @@ class Embedding(Base):
     vector_id = Column(String(100), nullable=True)  # ID referencing the vector index in Qdrant
 
     document = relationship("Document", back_populates="embeddings")
+
+
+class Task(Base):
+    __tablename__ = "tasks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(150), nullable=False)
+    description = Column(Text, nullable=True)
+    status = Column(String(50), default="Pending")  # Pending, Completed
+    assigned_to_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    date_created = Column(DateTime, default=datetime.utcnow)
+    due_date = Column(DateTime, nullable=True)
+
+    assigned_to = relationship("User", backref="tasks")

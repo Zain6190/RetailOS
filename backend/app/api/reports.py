@@ -10,7 +10,7 @@ from backend.app.core.database import get_db
 from backend.app.schemas.schemas import ForecastOut, ReportOut, ReportCreate
 from backend.app.models.models import Forecast, Report, Product, Sale, Inventory, User
 from backend.app.services.forecasting import ForecastingService
-from backend.app.api.deps import get_current_employee_or_admin, get_current_user
+from backend.app.api.deps import get_current_admin
 
 router = APIRouter()
 
@@ -21,7 +21,7 @@ def get_product_demand_forecast(
     product_id: int,
     days: int = Query(7, ge=1, le=30),
     db: Session = Depends(get_db),
-    user = Depends(get_current_employee_or_admin)
+    admin = Depends(get_current_admin)
 ):
     # Verify product
     product = db.query(Product).filter(Product.id == product_id).first()
@@ -41,7 +41,7 @@ def get_product_demand_forecast(
 @router.get("/forecast/financials")
 def get_financials_forecast(
     db: Session = Depends(get_db),
-    user = Depends(get_current_employee_or_admin)
+    admin = Depends(get_current_admin)
 ):
     return ForecastingService.calculate_financial_forecast(db)
 
@@ -53,7 +53,7 @@ def export_report_file(
     report_type: str = Query(..., regex="^(sales|inventory|financials)$"),
     format: str = Query("csv", regex="^(csv)$"),
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    admin: User = Depends(get_current_admin)
 ):
     output = io.StringIO()
     writer = csv.writer(output)
@@ -105,7 +105,7 @@ def export_report_file(
         type=report_type.title(),
         format=format.upper(),
         file_url=f"/api/v1/reports/export?report_type={report_type}&format={format}",
-        created_by=user.id
+        created_by=admin.id
     )
     db.add(db_report)
     db.commit()
@@ -122,6 +122,6 @@ def export_report_file(
 @router.get("/history", response_model=List[ReportOut])
 def get_reports_history(
     db: Session = Depends(get_db),
-    user = Depends(get_current_employee_or_admin)
+    admin = Depends(get_current_admin)
 ):
     return db.query(Report).order_by(Report.date_created.desc()).all()

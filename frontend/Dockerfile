@@ -4,10 +4,10 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 COPY . .
-RUN npm run build
+RUN npm run build -- --configuration production
 
 # Stage 2: Serve application with Nginx
 FROM nginx:alpine

@@ -5,13 +5,13 @@ from datetime import datetime
 
 from backend.app.core.database import get_db
 from backend.app.models.models import (
-    Customer, Supplier, PurchaseOrder, PurchaseOrderItem, Sale, SaleItem, Order, Inventory, Notification, Product
+    Customer, Supplier, PurchaseOrder, PurchaseOrderItem, Sale, SaleItem, Order, Inventory, Notification, Product, User
 )
 from backend.app.schemas.schemas import (
     CustomerCreate, CustomerOut, SupplierCreate, SupplierOut,
     PurchaseOrderCreate, PurchaseOrderOut, SaleCreate, SaleOut, OrderOut, OrderUpdate
 )
-from backend.app.api.deps import get_current_admin, get_current_employee_or_admin
+from backend.app.api.deps import get_current_admin, get_current_employee_or_admin, get_current_user
 from backend.app.core.websocket import manager
 
 router = APIRouter()
@@ -48,7 +48,10 @@ def create_customer(
 # --- Supplier Endpoints ---
 
 @router.get("/suppliers", response_model=List[SupplierOut])
-def list_suppliers(db: Session = Depends(get_db)):
+def list_suppliers(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin)
+):
     return db.query(Supplier).all()
 
 @router.post("/suppliers", response_model=SupplierOut)
@@ -74,14 +77,17 @@ def create_supplier(
 # --- Purchase Order Endpoints ---
 
 @router.get("/purchase-orders", response_model=List[PurchaseOrderOut])
-def list_purchase_orders(db: Session = Depends(get_db)):
+def list_purchase_orders(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin)
+):
     return db.query(PurchaseOrder).order_by(PurchaseOrder.date_created.desc()).all()
 
 @router.post("/purchase-orders", response_model=PurchaseOrderOut)
 def create_purchase_order(
     po_in: PurchaseOrderCreate,
     db: Session = Depends(get_db),
-    user=Depends(get_current_employee_or_admin)
+    admin: User = Depends(get_current_admin)
 ):
     # Verify supplier
     supplier = db.query(Supplier).filter(Supplier.id == po_in.supplier_id).first()
@@ -120,7 +126,7 @@ async def update_po_status(
     id: int,
     status: str,  # Draft, Sent, Received, Cancelled
     db: Session = Depends(get_db),
-    user=Depends(get_current_employee_or_admin)
+    admin: User = Depends(get_current_admin)
 ):
     po = db.query(PurchaseOrder).filter(PurchaseOrder.id == id).first()
     if not po:
@@ -168,8 +174,17 @@ async def update_po_status(
 # --- Sales Endpoints ---
 
 @router.get("/sales", response_model=List[SaleOut])
-def list_sales(db: Session = Depends(get_db)):
-    return db.query(Sale).order_by(Sale.date_created.desc()).all()
+def list_sales(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role.name == "Administrator":
+        return db.query(Sale).order_by(Sale.date_created.desc()).all()
+    else:
+        employee_id = current_user.employee.id if current_user.employee else None
+        if not employee_id:
+            return []
+        return db.query(Sale).filter(Sale.employee_id == employee_id).order_by(Sale.date_created.desc()).all()
 
 @router.post("/sales", response_model=SaleOut)
 async def process_sale(

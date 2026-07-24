@@ -312,3 +312,44 @@ class ChatResponse(BaseModel):
 class RecommendationResponse(BaseModel):
     recommended_products: List[ProductOut]
     reasoning: str
+
+
+# Task Schemas
+class TaskCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    assigned_to_id: int
+    due_date: Optional[datetime] = None
+
+class TaskStatusUpdate(BaseModel):
+    status: str
+
+class TaskOut(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    status: str
+    assigned_to_id: int
+    date_created: datetime
+    due_date: Optional[datetime] = None
+    class Config:
+        from_attributes = True
+
+# Staff Overview Schema
+class StaffOverviewOut(BaseModel):
+    id: int
+    email: str
+    full_name: str
+    role: str
+    department: Optional[str] = None
+    position: Optional[str] = None
+    salary: Optional[float] = None
+    hire_date: Optional[datetime] = None
+    sales_count: int
+    total_sales_amount: float
+    pending_tasks_count: int
+    completed_tasks_count: int
+    tasks: List[TaskOut] = []
+    last_activity: Optional[datetime] = None
+    class Config:
+        from_attributes = True

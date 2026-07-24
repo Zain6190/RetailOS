@@ -63,8 +63,17 @@ export class AppComponent implements OnInit {
       this.isLoggedIn = true;
       this.userName = localStorage.getItem('user_name') || 'Administrator';
       this.userRole = localStorage.getItem('user_role') || 'Admin';
+      
+      const body = document.body;
+      body.classList.remove('theme-manager', 'theme-staff');
+      if (this.userRole === 'Administrator') {
+        body.classList.add('theme-manager');
+      } else {
+        body.classList.add('theme-staff');
+      }
     } else {
       this.isLoggedIn = false;
+      document.body.classList.remove('theme-manager', 'theme-staff');
     }
   }
 
@@ -120,6 +129,7 @@ export class AppComponent implements OnInit {
   logout() {
     this.apiService.logout();
     this.isLoggedIn = false;
+    document.body.classList.remove('theme-manager', 'theme-staff');
     this.router.navigate(['/login']);
   }
 }

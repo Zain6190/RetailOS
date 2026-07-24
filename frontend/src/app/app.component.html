@@ -79,17 +79,17 @@
       <mat-nav-list class="sidebar-list">
         <a mat-list-item routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="sidebar-item">
           <mat-icon matListItemIcon>dashboard</mat-icon>
-          <span matListItemTitle>Executive Dashboard</span>
+          <span matListItemTitle>{{ userRole === 'Administrator' ? 'Executive Dashboard' : 'Sales Dashboard' }}</span>
         </a>
         <a mat-list-item routerLink="/inventory" routerLinkActive="active-link" class="sidebar-item">
           <mat-icon matListItemIcon>inventory_2</mat-icon>
-          <span matListItemTitle>Stock Control</span>
+          <span matListItemTitle>{{ userRole === 'Administrator' ? 'Stock Control' : 'Stock Lookup' }}</span>
         </a>
-        <a mat-list-item routerLink="/assistant" routerLinkActive="active-link" class="sidebar-item">
+        <a mat-list-item routerLink="/assistant" routerLinkActive="active-link" class="sidebar-item" *ngIf="userRole === 'Administrator'">
           <mat-icon matListItemIcon>forum</mat-icon>
           <span matListItemTitle>AI Store Copilot</span>
         </a>
-        <a mat-list-item routerLink="/suppliers" routerLinkActive="active-link" class="sidebar-item">
+        <a mat-list-item routerLink="/suppliers" routerLinkActive="active-link" class="sidebar-item" *ngIf="userRole === 'Administrator'">
           <mat-icon matListItemIcon>local_shipping</mat-icon>
           <span matListItemTitle>Supplier & POs</span>
         </a>

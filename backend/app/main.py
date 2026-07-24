@@ -11,6 +11,8 @@ from backend.app.api.inventory import router as inventory_router
 from backend.app.api.sales import router as sales_router
 from backend.app.api.agents import router as agents_router
 from backend.app.api.reports import router as reports_router
+from backend.app.api.tasks import router as tasks_router
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -64,6 +66,8 @@ app.include_router(inventory_router, prefix=f"{settings.API_V1_STR}/inventory", 
 app.include_router(sales_router, prefix=f"{settings.API_V1_STR}/sales", tags=["Sales Management"])
 app.include_router(agents_router, prefix=f"{settings.API_V1_STR}/agents", tags=["AI & Agents"])
 app.include_router(reports_router, prefix=f"{settings.API_V1_STR}/reports", tags=["Reporting Engine"])
+app.include_router(tasks_router, prefix=f"{settings.API_V1_STR}/tasks", tags=["Task Management"])
+
 
 if __name__ == "__main__":
     uvicorn.run("backend.app.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)

@@ -123,7 +123,7 @@ async def update_inventory_item(
     id: int,
     inventory_in: InventoryUpdate,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_employee_or_admin)
+    user: User = Depends(get_current_admin)
 ):
     inv = db.query(Inventory).filter(Inventory.id == id).first()
     if not inv:
@@ -172,7 +172,7 @@ async def update_inventory_item(
 async def ai_shelf_detection(
     request: ShelfDetectionRequest,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_employee_or_admin)
+    user: User = Depends(get_current_admin)
 ):
     # Simulated YOLO Shelf Object Detection
     # In a real environment, you pass the base64 image data to an OCR / YOLO API.

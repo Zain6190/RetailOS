@@ -16,6 +16,16 @@ const authGuard = () => {
   return false;
 };
 
+// Manager/Admin Route Guard
+const managerGuard = () => {
+  const router = inject(Router);
+  const token = localStorage.getItem('access_token');
+  const role = localStorage.getItem('user_role');
+  if (token && role === 'Administrator') return true;
+  router.navigate(['/']);
+  return false;
+};
+
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { 
@@ -24,8 +34,8 @@ export const routes: Routes = [
     children: [
       { path: '', component: DashboardComponent },
       { path: 'inventory', component: InventoryComponent },
-      { path: 'assistant', component: AssistantComponent },
-      { path: 'suppliers', component: SuppliersComponent }
+      { path: 'assistant', component: AssistantComponent, canActivate: [managerGuard] },
+      { path: 'suppliers', component: SuppliersComponent, canActivate: [managerGuard] }
     ]
   },
   { path: '**', redirectTo: '' }

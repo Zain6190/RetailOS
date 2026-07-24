@@ -116,26 +116,7 @@
   }
   
   .sidebar-item {
-    border-radius: 8px !important;
-    margin-bottom: 2px;
-    color: var(--text-secondary) !important;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.03) !important;
-      color: var(--text-primary) !important;
-    }
-    
-    &.active-link {
-      background: rgba(99, 102, 241, 0.15) !important;
-      color: #a5b4fc !important;
-      font-weight: 600;
-      border-left: 3px solid var(--primary-color);
-      
-      mat-icon {
-        color: var(--primary-color) !important;
-      }
-    }
+    // Styled globally in styles.scss
   }
   
   .sidebar-footer {

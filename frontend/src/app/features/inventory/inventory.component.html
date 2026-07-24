@@ -2,19 +2,19 @@
   <!-- Page Header -->
   <div class="page-title-row">
     <div>
-      <h1>Stock Control Center</h1>
-      <p class="subtitle">Search product catalogs, adjust floor stocks, upload shelf scans, and run pricing diagnostics</p>
+      <h1>{{ userRole === 'Administrator' ? 'Stock Control Center' : 'Stock Lookup' }}</h1>
+      <p class="subtitle">{{ userRole === 'Administrator' ? 'Search product catalogs, adjust floor stocks, upload shelf scans, and run pricing diagnostics' : 'Search product catalogs, view real-time stock levels, barcodes, and floor locations' }}</p>
     </div>
     <div class="header-actions">
       <button mat-flat-button color="accent" (click)="isScanModalOpen = true">
         <mat-icon>photo_camera</mat-icon>
         <span>AI Shelf Scan</span>
       </button>
-      <button mat-stroked-button (click)="isAddCategoryOpen = true">
+      <button mat-stroked-button (click)="isAddCategoryOpen = true" *ngIf="userRole === 'Administrator'">
         <mat-icon>add_box</mat-icon>
         <span>New Category</span>
       </button>
-      <button mat-flat-button color="primary" (click)="isAddProductOpen = true">
+      <button mat-flat-button color="primary" (click)="isAddProductOpen = true" *ngIf="userRole === 'Administrator'">
         <mat-icon>add</mat-icon>
         <span>New Product</span>
       </button>
@@ -45,6 +45,10 @@
       <p>Consulting catalog databases...</p>
     </div>
 
+    <div class="sku-tick-rule">
+      <span>⎢⎢⎢⎢⎢⎢ CATALOG STOCK REGISTRY ⎢⎢⎢⎢⎢⎢</span>
+    </div>
+
     <div *ngIf="!loading" class="table-container">
       <table class="custom-table">
         <thead>
@@ -52,16 +56,16 @@
             <th>SKU / Barcode</th>
             <th>Product Name</th>
             <th>Category</th>
-            <th>Unit Cost / Price</th>
+            <th>{{ userRole === 'Administrator' ? 'Unit Cost / Price' : 'Retail Price' }}</th>
             <th>Location</th>
             <th>Qty / Reorder</th>
             <th>Status</th>
-            <th class="actions-col">Actions</th>
+            <th class="actions-col" *ngIf="userRole === 'Administrator'">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngIf="filteredInventory.length === 0">
-            <td colspan="8" class="empty-table">No items found matching the selected filters.</td>
+            <td [attr.colspan]="userRole === 'Administrator' ? 8 : 7" class="empty-table">No items found matching the selected filters.</td>
           </tr>
           <tr *ngFor="let item of filteredInventory">
             <td>
@@ -74,13 +78,13 @@
             </td>
             <td>{{ item.product?.category?.name }}</td>
             <td>
-              <span class="cost-lbl">C: ${{ item.product?.cost }}</span>
-              <p class="price-lbl">P: ${{ item.product?.price }}</p>
+              <span class="cost-lbl" *ngIf="userRole === 'Administrator'">C: ${{ item.product?.cost }}</span>
+              <p class="price-lbl" [style.margin-top]="userRole !== 'Administrator' ? '0' : '4px'">P: ${{ item.product?.price }}</p>
             </td>
             <td>{{ item.location || 'Warehouse' }}</td>
             <td>
               <span class="qty-text">{{ item.quantity }}</span>
-              <p class="reorder-text">Limit: {{ item.reorder_level }}</p>
+              <p class="reorder-text" *ngIf="userRole === 'Administrator'">Limit: {{ item.reorder_level }}</p>
             </td>
             <td>
               <span class="badge" 
@@ -90,7 +94,7 @@
                 {{ item.status }}
               </span>
             </td>
-            <td class="actions-col">
+            <td class="actions-col" *ngIf="userRole === 'Administrator'">
               <button mat-icon-button (click)="openEditStock(item)" matTooltip="Edit stock levels" class="action-btn-edit">
                 <mat-icon>edit</mat-icon>
               </button>
